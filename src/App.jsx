@@ -695,7 +695,7 @@ export default function App() {
                 {/* Main circular photo */}
                 <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-indigo-500/40 shadow-2xl shadow-indigo-500/30 relative">
                   <img
-                    src="/src/assets/profile.jpg"
+                    src={profileImage}
                     alt="Foto Profil Pradnya Putra"
                     className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
                     onError={(e) => {
@@ -1162,8 +1162,8 @@ export default function App() {
             <button
               onClick={() => setTimelineTab('pengalaman')}
               className={`hover-target px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 border ${timelineTab === 'pengalaman'
-                  ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20'
-                  : 'bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800'
+                ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20'
+                : 'bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800'
                 }`}
             >
               Pengalaman (Akademik &amp; Organisasi)
@@ -1171,8 +1171,8 @@ export default function App() {
             <button
               onClick={() => setTimelineTab('pendidikan')}
               className={`hover-target px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 border ${timelineTab === 'pendidikan'
-                  ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20'
-                  : 'bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800'
+                ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/20'
+                : 'bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800'
                 }`}
             >
               Riwayat Pendidikan
