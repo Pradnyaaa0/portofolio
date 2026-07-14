@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Home as HomeIcon,
   User,
@@ -6,9 +6,7 @@ import {
   Briefcase,
   Layers,
   Mail,
-  ExternalLink,
   Code2,
-  Database,
   Terminal,
   Settings,
   Menu,
@@ -16,13 +14,9 @@ import {
   CheckCircle2,
   Sun,
   Moon,
-  ChevronRight,
   Sparkles,
   Download,
-  Calendar,
   Layers3,
-  Clock,
-  ThumbsUp,
   ArrowRight,
   Send,
   Loader2
@@ -30,6 +24,7 @@ import {
 import ajikzImage from './assets/ajikzcomputer.jpeg';
 import resepImage from './assets/resepajik.png';
 import ijukImage from './assets/ijuksecondbali.png';
+import profileImage from './assets/profile.jpg';
 
 const GithubIcon = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -60,7 +55,9 @@ import LoadingScreen from './components/LoadingScreen';
 import WhatsAppChat from './components/WhatsAppChat';
 
 function CountUp({ end, duration = 1500, suffix = '' }) {
-  const [count, setCount] = useState(0);
+  const endValue = parseInt(end, 10);
+  const isEndNan = isNaN(endValue);
+  const [count, setCount] = useState(() => (isEndNan ? end : 0));
   const [hasStarted, setHasStarted] = useState(false);
   const elementRef = useRef(null);
 
@@ -83,15 +80,9 @@ function CountUp({ end, duration = 1500, suffix = '' }) {
   }, []);
 
   useEffect(() => {
-    if (!hasStarted) return;
+    if (!hasStarted || isEndNan) return;
 
     let start = 0;
-    const endValue = parseInt(end, 10);
-    if (isNaN(endValue)) {
-      setCount(end);
-      return;
-    }
-
     const totalSteps = 40;
     const stepTime = Math.max(duration / totalSteps, 16);
     const increment = endValue / totalSteps;
@@ -107,7 +98,7 @@ function CountUp({ end, duration = 1500, suffix = '' }) {
     }, stepTime);
 
     return () => clearInterval(timer);
-  }, [hasStarted, end, duration]);
+  }, [hasStarted, endValue, isEndNan, duration]);
 
   return <span ref={elementRef}>{count}{suffix}</span>;
 }
@@ -117,6 +108,13 @@ const parseStatValue = (valStr) => {
   const suffix = valStr.replace(/[0-9]/g, '');
   return { num, suffix };
 };
+
+const titles = [
+  'Mahasiswa Informatika',
+  'Fullstack Web Developer',
+  'Mobile Developer',
+  'Software Engineer'
+];
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -139,49 +137,58 @@ export default function App() {
   const [timelineTab, setTimelineTab] = useState('pengalaman');
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const titles = [
-    'Mahasiswa Informatika',
-    'Fullstack Web Developer',
-    'Mobile Developer',
-    'Software Engineer'
-  ];
+  // Ref list for sections - declared at top level and memoized to follow Rules of Hooks and avoid ESLint warnings
+  const berandaRef = useRef(null);
+  const tentangRef = useRef(null);
+  const keahlianRef = useRef(null);
+  const featuredProjectsRef = useRef(null);
+  const pengalamanRef = useRef(null);
+  const layananRef = useRef(null);
+  const kontakRef = useRef(null);
 
-  // Ref list for sections
-  const sections = {
-    beranda: useRef(null),
-    tentang: useRef(null),
-    keahlian: useRef(null),
-    'featured-projects': useRef(null),
-    pengalaman: useRef(null),
-    layanan: useRef(null),
-    kontak: useRef(null),
-  };
+  const sections = useMemo(() => ({
+    beranda: berandaRef,
+    tentang: tentangRef,
+    keahlian: keahlianRef,
+    'featured-projects': featuredProjectsRef,
+    pengalaman: pengalamanRef,
+    layanan: layananRef,
+    kontak: kontakRef,
+  }), [berandaRef, tentangRef, keahlianRef, featuredProjectsRef, pengalamanRef, layananRef, kontakRef]);
 
-  // Typing animation effect
+  // Typing animation effect without cascading synchronous state updates inside useEffect
   useEffect(() => {
     if (isLoading) return;
 
     const currentTitle = titles[titleIndex];
-    let typingSpeed = isDeleting ? 30 : 75;
+    
+    const handleTyping = () => {
+      if (!isDeleting) {
+        if (charIndex < currentTitle.length) {
+          setTypedText(currentTitle.substring(0, charIndex + 1));
+          setCharIndex((prev) => prev + 1);
+        } else {
+          setIsDeleting(true);
+        }
+      } else {
+        if (charIndex > 0) {
+          setTypedText(currentTitle.substring(0, charIndex - 1));
+          setCharIndex((prev) => prev - 1);
+        } else {
+          setIsDeleting(false);
+          setTitleIndex((prev) => (prev + 1) % titles.length);
+        }
+      }
+    };
 
+    let typingSpeed = isDeleting ? 30 : 75;
     if (!isDeleting && charIndex === currentTitle.length) {
-      typingSpeed = 2000; // Pause at the end
-      setIsDeleting(true);
+      typingSpeed = 2000;
     } else if (isDeleting && charIndex === 0) {
-      setIsDeleting(false);
-      setTitleIndex((prev) => (prev + 1) % titles.length);
-      typingSpeed = 500; // Pause before typing next
+      typingSpeed = 500;
     }
 
-    const timer = setTimeout(() => {
-      setTypedText(
-        isDeleting
-          ? currentTitle.substring(0, charIndex - 1)
-          : currentTitle.substring(0, charIndex + 1)
-      );
-      setCharIndex((prev) => (isDeleting ? prev - 1 : prev + 1));
-    }, typingSpeed);
-
+    const timer = setTimeout(handleTyping, typingSpeed);
     return () => clearTimeout(timer);
   }, [charIndex, isDeleting, titleIndex, isLoading]);
 
@@ -230,7 +237,7 @@ export default function App() {
       revealObserver.disconnect();
       sectionObserver.disconnect();
     };
-  }, [isLoading]);
+  }, [isLoading, sections]);
 
   // Smooth Scroll handler
   const handleScrollTo = (sectionKey) => {
@@ -631,7 +638,7 @@ export default function App() {
         {/* HERO SECTION */}
         <section
           id="beranda"
-          ref={sections.beranda}
+          ref={berandaRef}
           className="min-h-screen flex flex-col justify-center pt-24 pb-16 px-6 md:px-12 lg:px-20 max-w-7xl relative"
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-6 items-center w-full">
@@ -824,7 +831,7 @@ export default function App() {
         {/* ABOUT SECTION */}
         <section
           id="tentang"
-          ref={sections.tentang}
+          ref={tentangRef}
           className="py-24 px-6 md:px-12 lg:px-20 max-w-7xl relative"
         >
           <div className="reveal-element">
@@ -911,7 +918,7 @@ export default function App() {
         {/* SKILLS SECTION */}
         <section
           id="keahlian"
-          ref={sections.keahlian}
+          ref={keahlianRef}
           className="py-24 px-6 md:px-12 lg:px-20 max-w-7xl relative"
         >
           <div className="reveal-element">
@@ -957,7 +964,7 @@ export default function App() {
         {/* FEATURED PROJECTS SECTION */}
         <section
           id="featured-projects"
-          ref={sections['featured-projects']}
+          ref={featuredProjectsRef}
           className="py-24 px-6 md:px-12 lg:px-20 max-w-7xl relative"
         >
           <div className="reveal-element">
@@ -966,7 +973,7 @@ export default function App() {
           </div>
 
           <div className="space-y-12">
-            {featuredProjects.map((project, index) => (
+            {featuredProjects.map((project) => (
               <div
                 key={project.id}
                 className="glass-card border-beam-glow rounded-3xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-0 relative reveal-element"
@@ -1149,7 +1156,7 @@ export default function App() {
         {/* EXPERIENCE & EDUCATION TIMELINE */}
         <section
           id="pengalaman"
-          ref={sections.pengalaman}
+          ref={pengalamanRef}
           className="py-24 px-6 md:px-12 lg:px-20 max-w-7xl relative"
         >
           <div className="reveal-element">
@@ -1227,7 +1234,7 @@ export default function App() {
         {/* SERVICES SECTION */}
         <section
           id="layanan"
-          ref={sections.layanan}
+          ref={layananRef}
           className="py-24 px-6 md:px-12 lg:px-20 max-w-7xl relative"
         >
           <div className="reveal-element">
@@ -1293,7 +1300,7 @@ export default function App() {
         {/* CONTACT SECTION */}
         <section
           id="kontak"
-          ref={sections.kontak}
+          ref={kontakRef}
           className="py-24 px-6 md:px-12 lg:px-20 max-w-7xl relative mb-16"
         >
           <div className="reveal-element">

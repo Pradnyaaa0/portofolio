@@ -1,1 +1,3 @@
-import profileImage from 'src/assets/profile.jpg';
+export default function Hero() {
+  return null;
+}

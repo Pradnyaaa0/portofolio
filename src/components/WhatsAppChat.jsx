@@ -93,7 +93,7 @@ export default function WhatsAppChat() {
     endDrag(e.clientX, e.clientY);
   };
 
-  const handleTouchEnd = (e) => {
+  const handleTouchEnd = () => {
     endDrag();
   };
 

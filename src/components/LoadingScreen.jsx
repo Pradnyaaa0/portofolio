@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 
 export default function LoadingScreen({ onComplete }) {
   const [progress, setProgress] = useState(0);
-  const [logIndex, setLogIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
 
   const logs = [
@@ -15,6 +14,12 @@ export default function LoadingScreen({ onComplete }) {
     'Hampir selesai...',
     'Sistem aktif. Selamat datang!'
   ];
+
+  // Calculate logIndex dynamically based on progress during render to avoid cascading renders
+  const logIndex = Math.min(
+    Math.floor((progress / 100) * logs.length),
+    logs.length - 1
+  );
 
   useEffect(() => {
     // Progress counter
@@ -32,17 +37,6 @@ export default function LoadingScreen({ onComplete }) {
 
     return () => clearInterval(progressInterval);
   }, []);
-
-  // Update terminal logs as progress increases
-  useEffect(() => {
-    const expectedLogIndex = Math.min(
-      Math.floor((progress / 100) * logs.length),
-      logs.length - 1
-    );
-    if (expectedLogIndex > logIndex) {
-      setLogIndex(expectedLogIndex);
-    }
-  }, [progress, logIndex, logs.length]);
 
   // Complete loading and trigger exit animation
   useEffect(() => {

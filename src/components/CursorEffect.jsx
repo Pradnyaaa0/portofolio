@@ -126,7 +126,7 @@ export default function CursorEffect() {
         const radius = computedStyle.borderRadius !== '50%' ? computedStyle.borderRadius : '12px';
 
         switch (hoverType) {
-          case 'magnetic':
+          case 'magnetic': {
             // Wrap the button snugly
             const padMag = 4;
             targetWidth = rect.width + padMag * 2;
@@ -139,8 +139,9 @@ export default function CursorEffect() {
             targetBoxShadow = '0 0 15px rgba(99, 102, 241, 0.2)';
             dotScale = 0; // hide dot
             break;
+          }
 
-          case 'card':
+          case 'card': {
             // Wrap the glass card with a glowing frame outline
             const padCard = 8;
             targetWidth = rect.width + padCard * 2;
@@ -153,8 +154,9 @@ export default function CursorEffect() {
             targetBoxShadow = '0 0 25px rgba(99, 102, 241, 0.2)';
             dotScale = 0.5; // shrink dot
             break;
+          }
 
-          case 'text':
+          case 'text': {
             // Wrap the header
             const padText = 6;
             targetWidth = rect.width + padText * 2;
@@ -166,6 +168,7 @@ export default function CursorEffect() {
             targetBorder = '1.5px dashed rgba(99, 102, 241, 0.3)';
             dotScale = 1;
             break;
+          }
 
           default:
             break;
