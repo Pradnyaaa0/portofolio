@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 export default function CursorEffect() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [hidden, setHidden] = useState(true);
-  const [label, setLabel] = useState('');
 
   // Track mouse coordinates
   const mouseRef = useRef({ x: 0, y: 0 });
@@ -210,9 +209,7 @@ export default function CursorEffect() {
 
       // 7. Update text label
       if (labelRef.current) {
-        if (currentLabel !== label) {
-          setLabel(currentLabel);
-        }
+        labelRef.current.textContent = currentLabel;
         labelRef.current.style.opacity = trail.labelOpacity;
       }
 
@@ -243,7 +240,7 @@ export default function CursorEffect() {
       document.removeEventListener('mouseenter', handleMouseEnter);
       cancelAnimationFrame(animFrameId);
     };
-  }, [hidden, label]);
+  }, [hidden]);
 
   if (hidden) return null;
 
@@ -271,9 +268,7 @@ export default function CursorEffect() {
         <span
           ref={labelRef}
           className="text-[9px] font-black text-white dark:text-neutral-100 uppercase tracking-widest pointer-events-none whitespace-nowrap px-2 animate-pulse"
-        >
-          {label}
-        </span>
+        />
       </div>
     </>
   );
