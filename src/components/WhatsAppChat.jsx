@@ -118,7 +118,7 @@ export default function WhatsAppChat() {
     if (distance < 5) {
       // Use the actual user's phone number or fall back to portfolio contact number
       const phoneNumber = '6285737036100'; // Phone from App.jsx: +62 857-3703-6100
-      const message = encodeURIComponent('Halo Pradnya! Saya tertarik untuk bekerja sama atau berdiskusi mengenai proyek.');
+      const message = encodeURIComponent('Hi Pradnya! I am interested in collaborating or discussing a project.');
       window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank', 'noopener,noreferrer');
     }
   };
@@ -145,7 +145,7 @@ export default function WhatsAppChat() {
         }}
       >
         <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse" />
-        Ada yang bisa dibantu? Chat yuk!
+        Need help? Let's chat!
         {/* Tiny arrow pointing down */}
         <div className="absolute top-full right-[23px] w-2.5 h-2.5 bg-white dark:bg-neutral-900 border-r border-b border-neutral-200/80 dark:border-neutral-800/85 transform rotate-45 -translate-y-1.5" />
       </div>
