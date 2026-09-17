@@ -1,14 +1,35 @@
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, lazy, Suspense, useEffect, useRef } from 'react';
 import { Send, CheckCircle2, X } from 'lucide-react';
-import Lanyard from './ui/Lanyard';
 import cvImage from '../assets/CV.jpeg';
 import { PROFILE_INFO } from '../data/profile';
+
+// Lazy load heavy Three.js & Rapier 3D bundle
+const Lanyard = lazy(() => import('./ui/Lanyard'));
 
 const ContactSection = forwardRef(function ContactSection(props, ref) {
   const [formState, setFormState] = useState({ name: '', email: '', subject: '', message: '' });
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // Lazy loading 3D canvas when approaching viewport
+  const [shouldRenderLanyard, setShouldRenderLanyard] = useState(false);
+  const lanyardContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (!lanyardContainerRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldRenderLanyard(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '350px' }
+    );
+    observer.observe(lanyardContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -76,20 +97,38 @@ const ContactSection = forwardRef(function ContactSection(props, ref) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center w-full">
         {/* Left Side: 3D Interactive Lanyard Hanging Freely */}
-        <div className="lg:col-span-6 w-full h-[540px] sm:h-[640px] lg:h-[760px] xl:h-[800px] relative flex items-center justify-center reveal-element-left">
-          <Lanyard
-            position={[0, 0, 11]}
-            gravity={[0, -40, 0]}
-            frontImage={cvImage}
-            backImage={cvImage}
-            imageFit="cover"
-            lanyardWidth={1.3}
-            nameLine1={PROFILE_INFO.name}
-            nameLine2=""
-            roleText={PROFILE_INFO.tagline}
-            emailText={PROFILE_INFO.email}
-            githubText={PROFILE_INFO.githubUsername}
-          />
+        <div
+          ref={lanyardContainerRef}
+          className="lg:col-span-6 w-full h-[540px] sm:h-[640px] lg:h-[760px] xl:h-[800px] relative flex items-center justify-center reveal-element-left"
+        >
+          {shouldRenderLanyard ? (
+            <Suspense
+              fallback={
+                <div className="flex flex-col items-center justify-center gap-3 text-neutral-400 font-mono text-xs">
+                  <div className="w-10 h-10 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin" />
+                  <span>Loading 3D Experience...</span>
+                </div>
+              }
+            >
+              <Lanyard
+                position={[0, 0, 11]}
+                gravity={[0, -40, 0]}
+                frontImage={cvImage}
+                backImage={cvImage}
+                imageFit="cover"
+                lanyardWidth={1.3}
+                nameLine1={PROFILE_INFO.name}
+                nameLine2=""
+                roleText={PROFILE_INFO.tagline}
+                emailText={PROFILE_INFO.email}
+                githubText={PROFILE_INFO.githubUsername}
+              />
+            </Suspense>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-3 text-neutral-400 font-mono text-xs">
+              <div className="w-10 h-10 rounded-full border-2 border-indigo-500/20 border-t-indigo-500/50 animate-pulse" />
+            </div>
+          )}
         </div>
 
         {/* Right Side: Minimalist Clean Contact Form */}

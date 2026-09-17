@@ -14,6 +14,21 @@ export default defineConfig({
   },
   assetsInclude: ['**/*.glb'],
   build: {
-    chunkSizeWarningLimit: 3000,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('three') || id.includes('@react-three') || id.includes('meshline')) {
+            return 'vendor-three';
+          }
+          if (id.includes('gsap') || id.includes('framer-motion')) {
+            return 'vendor-motion';
+          }
+          if (id.includes('lucide-react') || id.includes('lenis')) {
+            return 'vendor-ui';
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 2500,
   },
 })
