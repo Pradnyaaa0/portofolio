@@ -1,8 +1,8 @@
 import ajikzImage from '../assets/ajikzcomputer.jpeg';
-import resepImage from '../assets/resepajik.png';
-import anniversaryImage from '../assets/anniversary-invitation.png';
-import mesariImage from '../assets/mesari-rentbike.png';
-import ekelasImage from '../assets/ekelas.png';
+import resepImage from '../assets/resepajik.webp';
+import anniversaryImage from '../assets/anniversary-invitation.webp';
+import mesariImage from '../assets/mesari-rentbike.webp';
+import ekelasImage from '../assets/ekelas.webp';
 
 export const PROJECTS = [
   {
